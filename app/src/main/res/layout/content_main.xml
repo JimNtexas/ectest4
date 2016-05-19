@@ -11,11 +11,30 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.grayraven.ectest4.MainActivity"
     tools:showIn="@layout/activity_main">
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
 
-    <Button
-        android:layout_width="100dp"
-        android:layout_height="50dp"
-        android:id="@+id/log_in_btn"
-        android:text="Log In"
-        />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:gravity="center_horizontal">
+        <Button
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:id="@+id/log_in_btn"
+            android:text="Log In"
+            />
+
+        <Button
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:id="@+id/read_data"
+            android:text="Read Data"
+            android:layout_marginLeft="50dp" />
+    </LinearLayout>
+
+
 </RelativeLayout>

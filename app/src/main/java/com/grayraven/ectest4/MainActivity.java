@@ -12,15 +12,22 @@ import android.view.View;
 import android.widget.Button;
 
 import com.firebase.client.AuthData;
+import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.firebase.client.Query;
 import com.firebase.client.ValueEventListener;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
     Button mLoginBtn;
+    Button mReadBtn;
     Firebase mRef;
+    private AuthData mAuthData;
     private final static String TAG = "MainActivity";
 
     @Override
@@ -44,13 +51,18 @@ public class MainActivity extends AppCompatActivity {
         mRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                // Object Object_data = dataSnapshot.getValue();
                 Log.d(TAG, "OnDataChange");
-            }
+                Map<String, Object> map = (HashMap<String, Object>) dataSnapshot.getValue();
+                for (Map.Entry<String, Object> entry : map.entrySet()) {
+                    String key = entry.getKey();
+                    Object value = entry.getValue();
+                    Log.d(TAG, "Key: " + key + " - Value: " + value);
+                }
+                }
 
             @Override
             public void onCancelled(FirebaseError firebaseError) {
-
+                Log.d(TAG, "canceled");
             }
         });
 
@@ -63,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onAuthenticated(AuthData authData) {
                         Log.d(TAG, "WE'RE IN!!!!!!");
+                        mAuthData = authData;
                     }
 
                     @Override
@@ -72,6 +85,58 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
         });
+
+        mReadBtn = (Button)findViewById(R.id.read_data);
+        mReadBtn.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "Read data");
+                ReadHistoricData();
+            }
+        });
+    }
+
+    private void ReadHistoricData() {
+        //https://ectest4.firebaseio.com/HISTORIC_ELECTIONS/0/-YEAR
+        Firebase data = mRef.child("HISTORIC_ELECTIONS");
+        String result = data.toString();
+        Log.d(TAG, "Data:");
+        Query queryRef = mRef.orderByValue();
+        queryRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Log.d(TAG, "snapshot: " + dataSnapshot.getKey());
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mRef.unauth();
     }
 
     @Override
@@ -100,5 +165,25 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void logout() {
+        if (this.mAuthData != null) {
+            /* logout of Firebase */
+            mRef.unauth();
+           /* *//* Logout of any of the Frameworks. This step is optional, but ensures the user is not logged into
+             * Facebook/Google+ after logging out of Firebase. *//*
+            if (this.mAuthData.getProvider().equals("facebook")) {
+                *//* Logout from Facebook *//*
+                LoginManager.getInstance().logOut();
+            } else if (this.mAuthData.getProvider().equals("google")) {
+                *//* Logout from Google+ *//*
+                if (mGoogleApiClient.isConnected()) {
+                    Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
+                    mGoogleApiClient.disconnect();
+                }
+            }*/
+            /* Update authenticated user and show login buttons */
+        }
     }
 }
