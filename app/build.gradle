@@ -41,6 +41,8 @@ dependencies {
     /* Firebase UI */
     compile 'com.firebaseui:firebase-ui:0.2.2'
 
+    /* Gson */
+    compile 'com.google.code.gson:gson:2.2.4+'
 
     apply plugin: 'com.google.gms.google-services'
 }

@@ -19,13 +19,11 @@ import com.firebase.client.FirebaseError;
 import com.firebase.client.Query;
 import com.firebase.client.ValueEventListener;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class MainActivity extends AppCompatActivity {
 
     Button mLoginBtn;
     Button mReadBtn;
+    Button mPush;
     Firebase mRef;
     private AuthData mAuthData;
     private final static String TAG = "MainActivity";
@@ -47,18 +45,18 @@ public class MainActivity extends AppCompatActivity {
         });
 
         Firebase.setAndroidContext(this);
-        mRef = new Firebase("https://ectest4.firebaseio.com//");
+        mRef = new Firebase("https://ectest4.firebaseio.com");
         mRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d(TAG, "OnDataChange");
-                Map<String, Object> map = (HashMap<String, Object>) dataSnapshot.getValue();
+                Log.d(TAG, "onCreate - OnDataChange");
+               /* Map<String, Object> map = (HashMap<String, Object>) dataSnapshot.getValue();
                 for (Map.Entry<String, Object> entry : map.entrySet()) {
                     String key = entry.getKey();
                     Object value = entry.getValue();
                     Log.d(TAG, "Key: " + key + " - Value: " + value);
-                }
-                }
+                }*/
+            }
 
             @Override
             public void onCancelled(FirebaseError firebaseError) {
@@ -91,28 +89,43 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "Read data");
+                Log.d(TAG, "Read data clicked");
                 ReadHistoricData();
+                //ReadHistoricalData2();
+            }
+        });
+
+        mPush = (Button)findViewById(R.id.push_data);
+        mPush.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Firebase childRef = mRef.child("states");
+                childRef.child("ZZ").setValue(0);
+                childRef.child("TX").setValue(50);
+                childRef.child("AK").setValue(3);
             }
         });
     }
 
+
+
+
     private void ReadHistoricData() {
-        //https://ectest4.firebaseio.com/HISTORIC_ELECTIONS/0/-YEAR
-        Firebase data = mRef.child("HISTORIC_ELECTIONS");
-        String result = data.toString();
-        Log.d(TAG, "Data:");
-        Query queryRef = mRef.orderByValue();
+        final Query queryRef = mRef.child("states");
+        Log.d(TAG, "query path: " + queryRef.getPath());
+        queryRef.orderByKey();
+        Log.d(TAG, "Order by key");
         queryRef.addChildEventListener(new ChildEventListener() {
             @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Log.d(TAG, "snapshot: " + dataSnapshot.getKey());
+            public void onChildAdded(DataSnapshot snapshot, String s) {
+                 Log.d(TAG, "Child value:" + snapshot.getKey() + " - " + snapshot.getValue());
+
 
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
+                Log.d(TAG, "onChildChanged");
             }
 
             @Override
