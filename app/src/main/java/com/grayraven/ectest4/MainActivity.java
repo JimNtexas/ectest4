@@ -18,6 +18,9 @@ import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.Query;
 import com.firebase.client.ValueEventListener;
+import com.grayraven.ectest4.pojos.State;
+
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -49,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         mRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d(TAG, "onCreate - OnDataChange");
+        //        Log.d(TAG, "onCreate - OnDataChange");
                /* Map<String, Object> map = (HashMap<String, Object>) dataSnapshot.getValue();
                 for (Map.Entry<String, Object> entry : map.entrySet()) {
                     String key = entry.getKey();
@@ -99,10 +102,16 @@ public class MainActivity extends AppCompatActivity {
         mPush.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Firebase childRef = mRef.child("states");
-                childRef.child("ZZ").setValue(0);
-                childRef.child("TX").setValue(50);
-                childRef.child("AK").setValue(3);
+                Firebase childRef = mRef.child("states").child("1996");
+                childRef.child("AL").setValue(new State(3, false));
+                childRef.child("ME").setValue(new State(3, true));
+                childRef.child("TX").setValue(new State(20, false));
+
+                childRef = mRef.child("states").child("2000");
+                childRef.child("AL").setValue(new State(4, false));
+                childRef.child("ME").setValue(new State(5, true));
+                childRef.child("TX").setValue(new State(21, false));
+
             }
         });
     }
@@ -113,12 +122,17 @@ public class MainActivity extends AppCompatActivity {
     private void ReadHistoricData() {
         final Query queryRef = mRef.child("states");
         Log.d(TAG, "query path: " + queryRef.getPath());
-        queryRef.orderByKey();
-        Log.d(TAG, "Order by key");
+      //  queryRef.orderByValue().endAt("100");
+      //  Log.d(TAG, "Order by Value - endat");
         queryRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot snapshot, String s) {
-                 Log.d(TAG, "Child value:" + snapshot.getKey() + " - " + snapshot.getValue());
+                Map<String, State> map = (Map<String, State>) snapshot.getValue();  //http://stackoverflow.com/questions/32886546/how-to-get-all-child-list-from-firebase-android
+                Log.d(TAG, "map: " + map.toString());
+                for(Map.Entry<String, State> entry : map.entrySet()){
+                    Map<String, State> state = (Map<String, State>) entry.getValue();
+                    Log.d(TAG, "Key: " + entry.getKey() + " : " + state.toString());
+                }
 
 
             }
