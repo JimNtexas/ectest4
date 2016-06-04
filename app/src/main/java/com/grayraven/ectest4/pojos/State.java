@@ -2,7 +2,6 @@ package com.grayraven.ectest4.pojos;
 
 public class State   {
 
-    private String abbrv;
     private Integer votes;
     private Boolean splitable;
 
@@ -15,7 +14,6 @@ public class State   {
      * @param splitable
      */
     public State( Integer votes, Boolean splitable) {
-        this.abbrv = abbrv;
         this.votes = votes;
         this.splitable = splitable;
     }

@@ -20,8 +20,6 @@ import com.firebase.client.Query;
 import com.firebase.client.ValueEventListener;
 import com.grayraven.ectest4.pojos.State;
 
-import java.util.Map;
-
 public class MainActivity extends AppCompatActivity {
 
     Button mLoginBtn;
@@ -125,15 +123,20 @@ public class MainActivity extends AppCompatActivity {
       //  queryRef.orderByValue().endAt("100");
       //  Log.d(TAG, "Order by Value - endat");
         queryRef.addChildEventListener(new ChildEventListener() {
+
             @Override
             public void onChildAdded(DataSnapshot snapshot, String s) {
-                Map<String, State> map = (Map<String, State>) snapshot.getValue();  //http://stackoverflow.com/questions/32886546/how-to-get-all-child-list-from-firebase-android
-                Log.d(TAG, "map: " + map.toString());
-                for(Map.Entry<String, State> entry : map.entrySet()){
-                    Map<String, State> state = (Map<String, State>) entry.getValue();
-                    Log.d(TAG, "Key: " + entry.getKey() + " : " + state.toString());
+            //  Map<String, State> map = (Map<String, State>) snapshot.getValue();  //http://stackoverflow.com/questions/32886546/how-to-get-all-child-list-from-firebase-android
+                Log.d(TAG, "map: " + snapshot.toString());
+                Log.d(TAG, "map children: " + snapshot.getChildrenCount());
+                Log.d(TAG, "map key: " + snapshot.getKey());
+                for(DataSnapshot snap : snapshot.getChildren()) {
+                    Log.d(TAG, "snap key: " + snap.getKey());
+                    Log.d(TAG, "snap value:  " + snap.getValue().toString());
+                    int votes  = snap.child("votes").getValue(Integer.class);
+                    boolean split = snap.child("splitable").getValue(Boolean.class);
+                    Log.d(TAG, "votes: " + votes + " - splitable: " + split);
                 }
-
 
             }
 
