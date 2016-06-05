@@ -1,61 +1,56 @@
 package com.grayraven.ectest4.pojos;
 
-public class State   {
+import java.util.Comparator;
+
+public class State implements Comparable<State>  {
 
     private Integer votes;
     private Boolean splitable;
+    private String abbr;
 
     public State() {
     }
 
-    /**
-     *
-     * @param votes
-     * @param splitable
-     */
-    public State( Integer votes, Boolean splitable) {
+    public State(String abbr, Integer votes, Boolean splitable) {
+        this.abbr = abbr;
         this.votes = votes;
         this.splitable = splitable;
     }
 
-    /**
-     *
-     * @return
-     * The votes
-     */
+    public void setAbbr(String abbr) { this.abbr = abbr; }
+
+    public String getAbbr() { return abbr; }
+
     public Integer getVotes() {
         return votes;
     }
 
-    /**
-     *
-     * @param votes
-     * The votes
-     */
     public void setVotes(Integer votes) {
         this.votes = votes;
     }
 
-    /**
-     *
-     * @return
-     * The splitable
-     */
     public Boolean getSplitable() {
         return splitable;
     }
 
-    /**
-     *
-     * @param splitable
-     * The splitable
-     */
     public void setSplitable(Boolean splitable) {
         this.splitable = splitable;
     }
 
     public String toString() {
-        return "Votes: " + votes + " Spitable: " + splitable;
+        return "State: " + abbr + " Votes: " + votes + " Spitable: " + splitable;
     }
 
+    @Override
+    public int compareTo(State another) {
+        int compareValue = this.abbr.toUpperCase().compareTo(another.getAbbr().toUpperCase());
+        return compareValue;
+    }
+
+    public static Comparator<State> VoteComparator = new Comparator<State>() {
+        @Override
+        public int compare(State lhs, State rhs) {
+           return lhs.getVotes().compareTo(rhs.getVotes());
+        }
+    };
 }

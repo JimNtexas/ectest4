@@ -20,6 +20,9 @@ import com.firebase.client.Query;
 import com.firebase.client.ValueEventListener;
 import com.grayraven.ectest4.pojos.State;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 public class MainActivity extends AppCompatActivity {
 
     Button mLoginBtn;
@@ -101,14 +104,18 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Firebase childRef = mRef.child("states").child("1996");
-                childRef.child("AL").setValue(new State(3, false));
-                childRef.child("ME").setValue(new State(3, true));
-                childRef.child("TX").setValue(new State(20, false));
+                childRef.child("AL").setValue(new State("AL", 6, false));
+                childRef.child("ME").setValue(new State("ME", 4, true));
+                childRef.child("TX").setValue(new State("TX",20, false));
+                childRef.child("AK ").setValue(new State("AK",5, false));
+                childRef.child("DC").setValue(new State("DC", 3, false));
 
                 childRef = mRef.child("states").child("2000");
-                childRef.child("AL").setValue(new State(4, false));
-                childRef.child("ME").setValue(new State(5, true));
-                childRef.child("TX").setValue(new State(21, false));
+                childRef.child("AL").setValue(new State("AL", 6, false));
+                childRef.child("ME").setValue(new State("ME", 5, true));
+                childRef.child("TX").setValue(new State("TX", 21, false));
+                childRef.child("AK").setValue(new State("AK",4, false));
+                childRef.child("DC").setValue(new State("DC", 3, false));
 
             }
         });
@@ -120,8 +127,8 @@ public class MainActivity extends AppCompatActivity {
     private void ReadHistoricData() {
         final Query queryRef = mRef.child("states");
         Log.d(TAG, "query path: " + queryRef.getPath());
-      //  queryRef.orderByValue().endAt("100");
-      //  Log.d(TAG, "Order by Value - endat");
+        final ArrayList list = new ArrayList<State>();
+
         queryRef.addChildEventListener(new ChildEventListener() {
 
             @Override
@@ -130,14 +137,20 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "map: " + snapshot.toString());
                 Log.d(TAG, "map children: " + snapshot.getChildrenCount());
                 Log.d(TAG, "map key: " + snapshot.getKey());
+
+
                 for(DataSnapshot snap : snapshot.getChildren()) {
-                    Log.d(TAG, "snap key: " + snap.getKey());
-                    Log.d(TAG, "snap value:  " + snap.getValue().toString());
-                    int votes  = snap.child("votes").getValue(Integer.class);
-                    boolean split = snap.child("splitable").getValue(Boolean.class);
-                    Log.d(TAG, "votes: " + votes + " - splitable: " + split);
+                    State state = snap.getValue(State.class);
+                    Log.d(TAG, "state: " + state.toString());
+                    list.add(state);
                 }
 
+                Log.d(TAG, "========= " + snapshot.getKey() + " array by votes =============");
+                Collections.sort(list, State.VoteComparator);
+                for(int i= 0; i < list.size(); i++) {
+                    Log.d(TAG, list.get(i).toString());
+                }
+                list.clear();
             }
 
             @Override
